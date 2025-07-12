@@ -1,3 +1,2 @@
-ROOT <iostream>
-
-C_OUTPUT
+C_OUTPUT 0
+C_OUTPUT 1
