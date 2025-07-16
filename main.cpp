@@ -9,7 +9,39 @@ using namespace std;
 using vs = vector<string>;
 using vvs = vector<vector<string>>;
 
+vector<string> variableNames = {};
+vector<string> variableValues = {};
 
+/**
+ * @brief Reads input from the user for each variable name provided in args
+ *        and stores the input values in the variableValues vector.
+ *
+ * @param[in] args The list of variable names for which input is requested.
+ *
+ * @return 0 always.
+ */
+int C_INPUT(vs args){
+    for(int i = 0; i < args.size(); i++){
+        variableNames.push_back(args.at(i));
+        variableValues.push_back("");
+
+        string input;
+        cin >> input;
+        
+        variableValues.at(variableNames.size()-1) = input;
+    }
+    return 0;
+}
+
+
+/**
+ * @brief Output the given arguments as a line of text, with each argument
+ *        separated by a space, and with a newline at the end.
+ *
+ * @param[in] args The list of arguments to output.
+ *
+ * @return 0 always.
+ */
 int C_OUTPUT(vs args){
     for(int i = 0; i < args.size(); i++){
         cout << args.at(i);
@@ -20,6 +52,7 @@ int C_OUTPUT(vs args){
 
 
 int interpretCode(vvs Program){
+
     for(int lineNumber = 0; lineNumber < Program.size(); lineNumber++){
         string command;
         vs args;
