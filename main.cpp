@@ -12,6 +12,15 @@ using vvs = vector<vector<string>>;
 vector<string> variableNames = {};
 vector<string> variableValues = {};
 
+int is_a_variable(string var_name){
+    for(int i = 0; i < variableNames.size(); i++){
+        if(variableNames.at(i) == var_name){
+            return i;
+        }
+    }
+    return -1;
+}
+
 /**
  * @brief Reads input from the user for each variable name provided in args
  *        and stores the input values in the variableValues vector.
@@ -44,20 +53,32 @@ int C_INPUT(vs args){
  */
 int C_OUTPUT(vs args){
     for(int i = 0; i < args.size(); i++){
-        cout << args.at(i);
+        int variableIndex = is_a_variable(args.at(1));
+        if(variableIndex < 0){
+            cout << args.at(i);
+        }else{
+            cout << variableValues.at(variableIndex);
+        }
     }
     cout << endl;
     return 0;
 }
 
 
+/**
+ * @brief Executes the given program by interpreting the commands and arguments
+ *        in each line, and executing the corresponding functions.
+ *
+ * @param[in] Program The program to execute, given as a vector of vectors of
+ *                    strings, where each inner vector represents a line of code.
+ *
+ * @return 0 always.
+ */
 int interpretCode(vvs Program){
 
     for(int lineNumber = 0; lineNumber < Program.size(); lineNumber++){
         string command;
         vs args;
-
-        cout << '8';
 
         if (!Program.at(lineNumber).empty()) { // Check if the line has any words
             command = Program.at(lineNumber).at(0); // Get the first string (word) in the inner vector
@@ -67,14 +88,14 @@ int interpretCode(vvs Program){
             continue; // Skip to the next line
         }
 
-        cout << '9';
-
-        if (1 < Program.at(lineNumber).size()) { // Check if the line has any words
-            copy(Program.at(lineNumber).begin() + 1, Program.at(lineNumber).end(), args.begin());
+        if (1 > Program.at(lineNumber).size()) { // Check if the line has any words
+            continue;
         }
 
         if(command == "C_OUTPUT"){
             C_OUTPUT(args);
+        }else if(command == "C_INPUT"){
+            C_INPUT(args);
         }else{
             cout << command;
         }
