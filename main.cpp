@@ -9,16 +9,38 @@ using namespace std;
 using vs = vector<string>;
 using vvs = vector<vector<string>>;
 
-vector<string> variableNames = {};
-vector<string> variableValues = {};
+vs variableNames = {};
+vs variableValues = {};
 
+/**
+ * @brief Checks if the given variable name exists in the list of declared 
+ *        variables and returns its index.
+ *
+ * @param[in] var_name The name of the variable to check.
+ *
+ * @return The index of the variable if it exists, otherwise -1.
+ */
 int is_a_variable(string var_name){
-    for(int i = 0; i < variableNames.size(); i++){
-        if(variableNames.at(i) == var_name){
-            return i;
-        }
+    auto it = find(variableNames.begin(), variableNames.end(), var_name);
+    return (it != variableNames.end()) ? distance(variableNames.begin(), it) : -1;
+}
+
+int DECLARE(vs args){
+    auto it = find(variableNames.begin(), variableNames.end(), args.at(0));
+    if(variableNames.end() != it){
+        if(args.at(1) == "AS"){
+            int index = distance(variableNames.begin(), it);
+            variableValues.at(index) = args.at(2);
+        };
+        return 0;
     }
-    return -1;
+    variableNames.push_back(args.at(0));
+    if(args.at(1) == "AS"){
+        variableValues.push_back(args.at(2));
+    }else{
+        variableValues.push_back(NULL);
+    }
+    return 0;
 }
 
 /**
@@ -53,7 +75,8 @@ int C_INPUT(vs args){
  */
 int C_OUTPUT(vs args){
     for(int i = 0; i < args.size(); i++){
-        int variableIndex = is_a_variable(args.at(1));
+        int variableIndex = is_a_variable(args.at(i));
+        
         if(variableIndex < 0){
             cout << args.at(i);
         }else{
@@ -82,7 +105,9 @@ int interpretCode(vvs Program){
 
         if (!Program.at(lineNumber).empty()) { // Check if the line has any words
             command = Program.at(lineNumber).at(0); // Get the first string (word) in the inner vector
-        }else {
+            args = Program.at(lineNumber); // Get the rest of the words in the inner vector
+            args.erase(args.begin()); // Remove the command from the args vector
+       }else {
             // Handle empty lines if necessary (e.g., skip or error)
             std::cerr << "Warning: Line " << lineNumber << " is empty or has no command." << std::endl;
             continue; // Skip to the next line
@@ -96,6 +121,8 @@ int interpretCode(vvs Program){
             C_OUTPUT(args);
         }else if(command == "C_INPUT"){
             C_INPUT(args);
+        }else if(command == "DELCARE"){
+            DECLARE(args);
         }else{
             cout << command;
         }
