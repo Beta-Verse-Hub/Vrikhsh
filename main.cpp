@@ -26,21 +26,37 @@ int is_a_variable(string var_name){
 }
 
 int DECLARE(vs args){
+
     auto it = find(variableNames.begin(), variableNames.end(), args.at(0));
-    if(variableNames.end() != it){
-        if(args.at(1) == "AS"){
-            int index = distance(variableNames.begin(), it);
+    if (variableNames.end() != it) {
+
+        if (args.size() <= 1) {
+            return 0;
+        }
+
+        if (args.size() >= 3 && args.at(1) == "AS") {
+            int index = distance(variableNames.begin(), it);    
+
             variableValues.at(index) = args.at(2);
-        };
-        return 0;
+            return 0;
+        }else {
+            variableValues.push_back("null");
+            return 0;
+        }
     }
+
     variableNames.push_back(args.at(0));
-    if(args.at(1) == "AS"){
-        variableValues.push_back(args.at(2));
-    }else{
-        variableValues.push_back(NULL);
-    }
-    return 0;
+
+    if (args.size() == 1) {
+        variableValues.push_back("null");
+        return 0;
+    };
+
+    if (args.at(1) == "AS") {
+        int index = distance(variableNames.begin(), it);
+        variableValues.at(index) = args.at(2);
+        return 0;
+    };
 }
 
 /**
@@ -52,14 +68,18 @@ int DECLARE(vs args){
  * @return 0 always.
  */
 int C_INPUT(vs args){
-    for(int i = 0; i < args.size(); i++){
-        variableNames.push_back(args.at(i));
-        variableValues.push_back("");
+    for(const string& var_name : args){
+        int index = is_a_variable(var_name);
+        if (index == -1) { // If variable not declared, declare it first
+            variableNames.push_back(var_name);
+            variableValues.push_back(""); // Initialize with empty string
+            index = variableNames.size() - 1;
+        }
 
         string input;
         cin >> input;
-        
-        variableValues.at(variableNames.size()-1) = input;
+
+        variableValues.at(index) = input;
     }
     return 0;
 }
@@ -121,10 +141,8 @@ int interpretCode(vvs Program){
             C_OUTPUT(args);
         }else if(command == "C_INPUT"){
             C_INPUT(args);
-        }else if(command == "DELCARE"){
+        }else if(command == "DECLARE"){
             DECLARE(args);
-        }else{
-            cout << command;
         }
     };
 
