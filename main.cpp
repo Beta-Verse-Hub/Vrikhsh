@@ -143,6 +143,10 @@ int interpretCode(vvs Program){
             C_INPUT(args);
         }else if(command == "DECLARE"){
             DECLARE(args);
+        }else if(command == "ADD"){
+            DECLARE(args);
+        }else if(command == "SUB"){
+            DECLARE(args);
         }
     };
 
