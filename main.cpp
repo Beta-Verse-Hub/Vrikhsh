@@ -25,6 +25,16 @@ int is_a_variable(string var_name){
     return (it != variableNames.end()) ? distance(variableNames.begin(), it) : -1;
 }
 
+/**
+ * @brief Declare a variable and initialize it with a value if specified.
+ *
+ * @param[in] args A vector of strings with the following structure:
+ *                  - The first element is the variable name to declare.
+ *                  - The second element is "AS" if a value is specified.
+ *                  - The third element is the value to assign to the variable.
+ *
+ * @return 0 always.
+ */
 int DECLARE(vs args){
 
     auto it = find(variableNames.begin(), variableNames.end(), args.at(0));
@@ -70,6 +80,7 @@ int DECLARE(vs args){
 int C_INPUT(vs args){
     for(const string& var_name : args){
         int index = is_a_variable(var_name);
+        
         if (index == -1) { // If variable not declared, declare it first
             variableNames.push_back(var_name);
             variableValues.push_back(""); // Initialize with empty string
@@ -105,6 +116,84 @@ int C_OUTPUT(vs args){
     }
     cout << endl;
     return 0;
+}
+
+
+/**
+ * @brief Adds two values together and stores the result in a variable.
+ *
+ * @param[in] args A vector of strings with the following structure:
+ *                  - The first element is the first value to add.
+ *                  - The second element is the second value to add.
+ *                  - The third element is the variable name in which to store the result.
+ *
+ * @return 0 always.
+ */
+int ADD(vs args){
+
+    int val1 = is_a_variable(args.at(0));
+    int val2 = is_a_variable(args.at(1));
+    int newvar = is_a_variable(args.at(2));
+
+    if(val1 == -1){
+        val1 = stoi(args.at(0));
+    }else{
+        val1 = stoi(variableValues.at(val1));
+    }
+
+    if(val2 == -1){
+        val2 = stoi(args.at(1));
+    }else{
+        val2 = stoi(variableValues.at(val2));
+    }
+
+    if (newvar == -1){
+        variableNames.push_back(args.at(2));
+        variableValues.push_back(to_string(val1 + val2));
+        return 0;
+    }else{
+        variableValues.at(newvar) = to_string(val1 + val2);
+        return 0;
+    }
+}
+
+
+/**
+ * @brief Subtracts the second value from the first and stores the result in a variable.
+ *
+ * @param[in] args A vector of strings with the following structure:
+ *                  - The first element is the first value.
+ *                  - The second element is the second value to subtract from the first.
+ *                  - The third element is the variable name in which to store the result.
+ *
+ * @return 0 always.
+ */
+int SUB(vs args){
+
+    int val1 = is_a_variable(args.at(0));
+    int val2 = is_a_variable(args.at(1));
+    int newvar = is_a_variable(args.at(2));
+
+    if(val1 == -1){
+        val1 = stoi(args.at(0));
+    }else{
+        val1 = stoi(variableValues.at(val1));
+    }
+
+    if(val2 == -1){
+        val2 = stoi(args.at(1));
+    }else{
+        val2 = stoi(variableValues.at(val2));
+    }
+
+    if (newvar == -1){
+        variableNames.push_back(args.at(2));
+        variableValues.push_back(to_string(val1 - val2));
+        return 0;
+    }else{
+        variableValues.at(newvar) = to_string(val1 - val2);
+        return 0;
+    }
 }
 
 
