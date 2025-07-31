@@ -129,7 +129,7 @@ int C_OUTPUT(vs args){
  *
  * @return 0 always.
  */
-int ADD(vs args){
+int ASMD_OPERATIONS(vs args, string operation){
 
     int val1 = is_a_variable(args.at(0));
     int val2 = is_a_variable(args.at(1));
@@ -147,51 +147,23 @@ int ADD(vs args){
         val2 = stoi(variableValues.at(val2));
     }
 
-    if (newvar == -1){
-        variableNames.push_back(args.at(2));
-        variableValues.push_back(to_string(val1 + val2));
-        return 0;
-    }else{
-        variableValues.at(newvar) = to_string(val1 + val2);
-        return 0;
-    }
-}
-
-
-/**
- * @brief Subtracts the second value from the first and stores the result in a variable.
- *
- * @param[in] args A vector of strings with the following structure:
- *                  - The first element is the first value.
- *                  - The second element is the second value to subtract from the first.
- *                  - The third element is the variable name in which to store the result.
- *
- * @return 0 always.
- */
-int SUB(vs args){
-
-    int val1 = is_a_variable(args.at(0));
-    int val2 = is_a_variable(args.at(1));
-    int newvar = is_a_variable(args.at(2));
-
-    if(val1 == -1){
-        val1 = stoi(args.at(0));
-    }else{
-        val1 = stoi(variableValues.at(val1));
-    }
-
-    if(val2 == -1){
-        val2 = stoi(args.at(1));
-    }else{
-        val2 = stoi(variableValues.at(val2));
+    int newval;
+    if(operation == "ADD"){
+        newval = val1 + val2;
+    }else if(operation == "SUB"){
+        newval = val1 - val2;
+    }else if(operation == "MUL"){
+        newval = val1 * val2;
+    }else if(operation == "DIV"){
+        newval = val1 / val2;
     }
 
     if (newvar == -1){
         variableNames.push_back(args.at(2));
-        variableValues.push_back(to_string(val1 - val2));
+        variableValues.push_back(to_string(newval));
         return 0;
     }else{
-        variableValues.at(newvar) = to_string(val1 - val2);
+        variableValues.at(newvar) = to_string(newval);
         return 0;
     }
 }
@@ -232,10 +204,8 @@ int interpretCode(vvs Program){
             C_INPUT(args);
         }else if(command == "DECLARE"){
             DECLARE(args);
-        }else if(command == "ADD"){
-            DECLARE(args);
-        }else if(command == "SUB"){
-            DECLARE(args);
+        }else if(command == "ADD" || command == "SUB" || command == "MUL" || command == "DIV"){
+            ASMD_OPERATIONS(args, command);
         }
     };
 
