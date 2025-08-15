@@ -53,6 +53,8 @@ Get the code from the following link: https://github.com/Beta-Verse-Hub/Vrikhsh/
 
 # Running the code:
 
-Open a cmd window and run the following command:
+Open a cmd window and run the following command to run the example code:
 
-`main.exe "MyProgram.vri"`
+`main.exe "ExampleCode.vri"`
+
+The example code takes two inumbrs input from te user and then add, subtract, multiply and divide them and finally output the results.
