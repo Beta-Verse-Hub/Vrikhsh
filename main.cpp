@@ -13,12 +13,12 @@ vs variableNames = {};
 vs variableValues = {};
 
 /**
- * @brief Checks if the given variable name exists in the list of declared 
- *        variables and returns its index.
+ * @brief Checks if a given variable name is present in the variableNames vector.
  *
  * @param[in] var_name The name of the variable to check.
  *
- * @return The index of the variable if it exists, otherwise -1.
+ * @return The index of the variable in the variableNames vector if found,
+ *         -1 otherwise.
  */
 int is_a_variable(string var_name){
     auto it = find(variableNames.begin(), variableNames.end(), var_name);
@@ -26,12 +26,13 @@ int is_a_variable(string var_name){
 }
 
 /**
- * @brief Declare a variable and initialize it with a value if specified.
+ * @brief Declares a variable with the given name and initializes it with the
+ *        given value. If the variable already exists, it updates the value.
  *
  * @param[in] args A vector of strings with the following structure:
- *                  - The first element is the variable name to declare.
- *                  - The second element is "AS" if a value is specified.
- *                  - The third element is the value to assign to the variable.
+ *                  - The first element is the name of the variable to declare.
+ *                  - If the second element is "AS", the third element is the
+ *                    value to initialize the variable with.
  *
  * @return 0 always.
  */
@@ -67,13 +68,17 @@ int DECLARE(vs args){
         variableValues.at(index) = args.at(2);
         return 0;
     };
+
+    return 0;
 }
 
 /**
- * @brief Reads input from the user for each variable name provided in args
- *        and stores the input values in the variableValues vector.
+ * @brief Reads user input for each variable in the given list of argument
+ *        names, and stores the input in the corresponding variable.
  *
- * @param[in] args The list of variable names for which input is requested.
+ * @param[in] args A vector of strings, where each string is the name of a
+ *                 variable for which user input should be read. If a variable
+ *                 is not declared, it is declared first.
  *
  * @return 0 always.
  */
@@ -95,12 +100,11 @@ int C_INPUT(vs args){
     return 0;
 }
 
-
 /**
- * @brief Output the given arguments as a line of text, with each argument
- *        separated by a space, and with a newline at the end.
+ * @brief Outputs the values of the given arguments to the console.
  *
- * @param[in] args The list of arguments to output.
+ * @param[in] args A vector of strings, where each string is either a variable
+ *                 name or a literal value to output.
  *
  * @return 0 always.
  */
@@ -118,14 +122,16 @@ int C_OUTPUT(vs args){
     return 0;
 }
 
-
 /**
- * @brief Adds two values together and stores the result in a variable.
+ * @brief Performs an arithmetic operation on two input values and stores
+ *        the result in a new variable, or updates the value of an existing
+ *        variable.
  *
- * @param[in] args A vector of strings with the following structure:
- *                  - The first element is the first value to add.
- *                  - The second element is the second value to add.
- *                  - The third element is the variable name in which to store the result.
+ * @param[in] args A vector of strings, where the first two strings are variable
+ *                 names or literal values, and the third string is the name
+ *                 of the variable to store the result.
+ * @param[in] operation The arithmetic operation to perform, one of "ADD",
+ *                      "SUB", "MUL", or "DIV".
  *
  * @return 0 always.
  */
@@ -168,17 +174,18 @@ int ASMD_OPERATIONS(vs args, string operation){
     }
 }
 
-
 /**
- * @brief Executes the given program by interpreting the commands and arguments
- *        in each line, and executing the corresponding functions.
+ * @brief Interprets the given program, a vector of strings where each string
+ *        is a line of code, and executes each line of code.
  *
- * @param[in] Program The program to execute, given as a vector of vectors of
- *                    strings, where each inner vector represents a line of code.
+ * @param[in] Program A vector of vectors of strings, where each inner vector
+ *                    contains the words of a line of code. The first word is
+ *                    the command, and the rest of the words are arguments to
+ *                    the command.
  *
- * @return 0 always.
+ * @throws None
  */
-int interpretCode(vvs Program){
+void interpretCode(vvs Program){
 
     for(int lineNumber = 0; lineNumber < Program.size(); lineNumber++){
         string command;
@@ -189,8 +196,6 @@ int interpretCode(vvs Program){
             args = Program.at(lineNumber); // Get the rest of the words in the inner vector
             args.erase(args.begin()); // Remove the command from the args vector
        }else {
-            // Handle empty lines if necessary (e.g., skip or error)
-            std::cerr << "Warning: Line " << lineNumber << " is empty or has no command." << std::endl;
             continue; // Skip to the next line
         }
 
@@ -206,17 +211,24 @@ int interpretCode(vvs Program){
             DECLARE(args);
         }else if(command == "ADD" || command == "SUB" || command == "MUL" || command == "DIV"){
             ASMD_OPERATIONS(args, command);
+        }else if(command == "COMMENT"){
+            // Do nothing
+        }else{
+            std::cerr << "Error: Unknown command: " << command << std::endl;
         }
     };
-
-    return 0;
 }
 
+/**
+ * @brief Reads the program from the given script path and interprets it.
+ *
+ * @param scriptPath The path to the script file containing the program.
+ *
+ * @throws None
+ */
+void readCode(string scriptPath){
 
-int readCode(){
-    int status = 0;
-
-    ifstream inputProgramFile("MyProgram.vri");
+    ifstream inputProgramFile(scriptPath);
 
     string line;
     vvs inputProgram;
@@ -232,11 +244,29 @@ int readCode(){
     };
 
     interpretCode(inputProgram);
-
-    return status;
 }
 
 
-int main(){
-    return readCode();
+/**
+ * @brief The main function of the program.
+ *
+ * @param argc The number of command line arguments.
+ * @param argv An array of strings containing the command line arguments.
+ *
+ * @return 0 if the program executed successfully. 1 if an error occurred.
+ *
+ * This function checks if exactly one command line argument is provided,
+ * which is the path to a script file. It then reads the script file and
+ * interprets the program contained within it.
+ */
+int main(int argc, char* argv[]){
+    if (argc != 2) {
+        cerr << "Error: Please provide a script file as an argument." << endl;
+        return 1;
+    }
+
+    string scriptPath = argv[1];
+    readCode(scriptPath);
+
+    return 0;
 }
